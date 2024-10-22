@@ -1,6 +1,6 @@
 import sqlite3
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox
 
 # Connect to SQLite database
 conn = sqlite3.connect('roomshare.db')
@@ -42,7 +42,7 @@ current_user = None
 def show_welcome():
     welcome_screen = tk.Tk()
     welcome_screen.title("RoomShare")
-    welcome_screen.configure(bg="#F0F8FF")  # Light blue background
+    welcome_screen.configure(bg="#F0F8FF")
 
     tk.Label(welcome_screen, text="Welcome to RoomShare!", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=20)
 
@@ -147,24 +147,10 @@ def show_user_dashboard():
               bg="#20B2AA", fg="white", font=("Arial", 14), width=20).pack(pady=10)
     tk.Button(dashboard_screen, text="Create Room", command=create_room,
               bg="#5F9EA0", fg="white", font=("Arial", 14), width=20).pack(pady=10)
-    tk.Button(dashboard_screen, text="Purdue Students - Click Here", command=show_empty_page,
-              bg="#20B2AA", fg="white", font=("Arial", 14), width=20).pack(pady=10)
     tk.Button(dashboard_screen, text="Log Out", command=lambda: [dashboard_screen.destroy(), show_welcome()],
               bg="#FF4500", fg="white", font=("Arial", 14), width=20).pack(pady=10)
 
     dashboard_screen.mainloop()
-
-# Function to show an empty page
-def show_empty_page():
-    empty_screen = tk.Tk()
-    empty_screen.title("Purdue Students Page")
-    empty_screen.configure(bg="#F0F8FF")
-
-    tk.Label(empty_screen, text="This page will be updated later.", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=20)
-    tk.Button(empty_screen, text="Back", command=empty_screen.destroy,
-              bg="#FF6347", fg="white", font=("Arial", 14)).pack(pady=10)
-
-    empty_screen.mainloop()
 
 # Function to view transactions
 def view_transactions():
@@ -179,7 +165,7 @@ def view_transactions():
         tk.Label(transactions_screen, text="Transactions:", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
         for transaction in transactions:
-            tk.Label(transactions_screen, text=f"{transaction[2]} is owed ${transaction[4]} for {transaction[5]} by {transaction[1]}", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+            tk.Label(transactions_screen, text=f"{transaction[1]} is owed ${transaction[4]} for {transaction[5]} by {transaction[2]}", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
 
         tk.Button(transactions_screen, text="Settle Transaction", command=lambda: settle_transaction(transactions),
                   bg="#20B2AA", fg="white", font=("Arial", 14)).pack(pady=10)
@@ -198,43 +184,31 @@ def settle_transaction(transactions):
 
     tk.Label(settle_screen, text="Select a Transaction to Settle:", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
-    transaction_var = tk.StringVar()
-    transaction_combobox = ttk.Combobox(settle_screen, textvariable=transaction_var)
-    transaction_combobox['values'] = [f"{transaction[1]} owes {transaction[2]} for {transaction[5]} - ${transaction[4]}" for transaction in transactions]
-    transaction_combobox.pack(pady=10)
+    for transaction in transactions:
+        tk.Button(settle_screen, text=f"{transaction[1]} is owed ${transaction[4]} for {transaction[5]} by {transaction[2]}",
+                  command=lambda t=transaction: handle_settle(t), bg="#20B2AA", fg="white").pack(pady=5)
 
-    def handle_settle():
-        selected_transaction = transaction_var.get()
-        if not selected_transaction:
-            messagebox.showerror("Error", "Please select a transaction!")
-            return
-
-        username = selected_transaction.split()[0]  # Extract username from selected string
-        cursor.execute("DELETE FROM transactions WHERE username=?", (username,))
-        conn.commit()
-        messagebox.showinfo("Success", "Transaction settled successfully!")
-        settle_screen.destroy()
-
-    tk.Button(settle_screen, text="Settle", command=handle_settle,
-              bg="#20B2AA", fg="white", font=("Arial", 14)).pack(pady=10)
     tk.Button(settle_screen, text="Back", command=settle_screen.destroy,
-              bg="#FF6347", fg="white", font=("Arial", 14)).pack(pady=10)
-
+              bg="#FF6347", fg="white").pack(pady=10)
     settle_screen.mainloop()
 
-# Function to add a transaction
+def handle_settle(transaction):
+    cursor.execute("DELETE FROM transactions WHERE id=?", (transaction[0],))
+    conn.commit()
+    messagebox.showinfo("Success", "Transaction settled successfully!")
+    
 def add_transaction():
     transaction_screen = tk.Tk()
     transaction_screen.title("Add Transaction")
     transaction_screen.configure(bg="#F0F8FF")
 
-    tk.Label(transaction_screen, text="Add a Transaction", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(transaction_screen, text="Add Transaction", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
-    tk.Label(transaction_screen, text="Roommate's Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    tk.Label(transaction_screen, text="Roommate Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     roommate_entry = tk.Entry(transaction_screen)
     roommate_entry.pack(pady=5)
 
-    tk.Label(transaction_screen, text="Room Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    tk.Label(transaction_screen, text="Room Name (For Verification)", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     room_name_entry = tk.Entry(transaction_screen)
     room_name_entry.pack(pady=5)
 
@@ -252,24 +226,17 @@ def add_transaction():
         amount = amount_entry.get()
         item = item_entry.get()
 
-        if not roommate or not room_name or not amount or not item:
-            messagebox.showerror("Error", "All fields must be filled!")
-            return
-
-        try:
-            cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
-                           (current_user, roommate, room_name, float(amount), item))
-            conn.commit()
-            messagebox.showinfo("Success", "Transaction added successfully!")
-            transaction_screen.destroy()
-        except ValueError:
-            messagebox.showerror("Error", "Amount must be a number!")
+        cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
+                       (current_user, roommate, room_name, amount, item))
+        conn.commit()
+        messagebox.showinfo("Success", "Transaction added successfully!")
+        transaction_screen.destroy()
 
     tk.Button(transaction_screen, text="Add Transaction", command=handle_add_transaction,
-              bg="#20B2AA", fg="white", font=("Arial", 14)).pack(pady=10)
-    tk.Button(transaction_screen, text="Back", command=transaction_screen.destroy,
-              bg="#FF6347", fg="white", font=("Arial", 14)).pack(pady=10)
+              bg="#5F9EA0", fg="white").pack(pady=10)
 
+    tk.Button(transaction_screen, text="Back", command=transaction_screen.destroy,
+              bg="#FF6347", fg="white").pack(pady=10)
     transaction_screen.mainloop()
 
 # Function to create a room
@@ -278,9 +245,9 @@ def create_room():
     room_screen.title("Create Room")
     room_screen.configure(bg="#F0F8FF")
 
-    tk.Label(room_screen, text="Create a Room", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(room_screen, text="Create Room", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
-    tk.Label(room_screen, text="Roommate's Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    tk.Label(room_screen, text="Roommate Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     roommate_entry = tk.Entry(room_screen)
     roommate_entry.pack(pady=5)
 
@@ -292,10 +259,6 @@ def create_room():
         roommate = roommate_entry.get()
         room_name = room_name_entry.get()
 
-        if not roommate or not room_name:
-            messagebox.showerror("Error", "Both fields must be filled!")
-            return
-
         cursor.execute("INSERT INTO rooms (owner, roommate, room_name) VALUES (?, ?, ?)",
                        (current_user, roommate, room_name))
         conn.commit()
@@ -303,14 +266,14 @@ def create_room():
         room_screen.destroy()
 
     tk.Button(room_screen, text="Create Room", command=handle_create_room,
-              bg="#20B2AA", fg="white", font=("Arial", 14)).pack(pady=10)
+              bg="#5F9EA0", fg="white").pack(pady=10)
     tk.Button(room_screen, text="Back", command=room_screen.destroy,
-              bg="#FF6347", fg="white", font=("Arial", 14)).pack(pady=10)
+              bg="#FF6347", fg="white").pack(pady=10)
 
     room_screen.mainloop()
 
 # Show the welcome screen
 show_welcome()
 
-# Close the connection when the application is closed
+# Close the database connection
 conn.close()
