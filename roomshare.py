@@ -1,6 +1,7 @@
 import sqlite3
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 # Connect to SQLite database
 conn = sqlite3.connect('roomshare.db')
@@ -43,23 +44,50 @@ def show_welcome():
     welcome_screen = tk.Tk()
     welcome_screen.title("RoomShare")
     welcome_screen.configure(bg="#F0F8FF")
+    welcome_screen.geometry("1000x1000")
 
-    tk.Label(welcome_screen, text="Welcome to RoomShare!", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=20)
+    tk.Label(welcome_screen, text="Welcome to RoomShare!", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=40)
 
     tk.Button(welcome_screen, text="Log In", command=lambda: [welcome_screen.destroy(), show_login()],
-              bg="#5F9EA0", fg="white", font=("Arial", 14), width=20).pack(pady=10)
+              bg="#5F9EA0", fg="white", font=("Garamond", 14), width=20).pack(pady=10)
     tk.Button(welcome_screen, text="Sign Up", command=lambda: [welcome_screen.destroy(), show_signup()],
-              bg="#20B2AA", fg="white", font=("Arial", 14), width=20).pack(pady=10)
+              bg="#20B2AA", fg="white", font=("Garamond", 14), width=20).pack(pady=10)
 
     welcome_screen.mainloop()
+    
+import os
+image_path = os.path.join("path", "to", "your", "roomsharelogo.png")
+
+
+root = tk.Tk()
+root.title("Image Loader")
+
+# Specify the path to your PNG file
+image_path = "path/to/your/image.png"  # Adjust the path as needed
+
+try:
+    # Open and load the image
+    image = Image.open(image_path)
+    photo = ImageTk.PhotoImage(image)
+
+    # Create a label to display the image
+    label = tk.Label(root, image=photo)
+    label.pack()
+
+except FileNotFoundError:
+    print(f"Image Loading Error")
+
+# Start the event loop
+root.mainloop()
 
 # Function to show signup screen
 def show_signup():
     signup_screen = tk.Tk()
     signup_screen.title("Sign Up")
     signup_screen.configure(bg="#F0F8FF")
+    signup_screen.geometry("1000x1000")
 
-    tk.Label(signup_screen, text="Create an Account", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(signup_screen, text="Create an Account", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
     tk.Label(signup_screen, text="Username", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     username_entry = tk.Entry(signup_screen)
@@ -92,7 +120,7 @@ def show_signup():
             messagebox.showerror("Error", "Username already exists!")
 
     tk.Button(signup_screen, text="Sign Up", command=handle_signup,
-              bg="#5F9EA0", fg="white", font=("Arial", 14)).pack(pady=10)
+              bg="#5F9EA0", fg="white", font=("Garamond", 14)).pack(pady=10)
 
     signup_screen.mainloop()
 
@@ -101,8 +129,9 @@ def show_login():
     login_screen = tk.Tk()
     login_screen.title("Log In")
     login_screen.configure(bg="#F0F8FF")
+    login_screen.geometry("1000x1000")
 
-    tk.Label(login_screen, text="Log In", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(login_screen, text="Log In", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
     tk.Label(login_screen, text="Username", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     username_entry = tk.Entry(login_screen)
@@ -129,7 +158,7 @@ def show_login():
             messagebox.showerror("Error", "Invalid username or password!")
 
     tk.Button(login_screen, text="Log In", command=handle_login,
-              bg="#20B2AA", fg="white", font=("Arial", 14)).pack(pady=10)
+              bg="#20B2AA", fg="white", font=("Garamond", 14)).pack(pady=10)
 
     login_screen.mainloop()
 
@@ -138,17 +167,18 @@ def show_user_dashboard():
     dashboard_screen = tk.Tk()
     dashboard_screen.title("User Dashboard")
     dashboard_screen.configure(bg="#F0F8FF")
+    dashboard_screen.geometry("1000x1000")
 
-    tk.Label(dashboard_screen, text=f"Welcome, {current_user}!", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=20)
+    tk.Label(dashboard_screen, text=f"Welcome, {current_user}!", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=20)
 
     tk.Button(dashboard_screen, text="View Transactions", command=view_transactions,
-              bg="#5F9EA0", fg="white", font=("Arial", 14), width=20).pack(pady=10)
+              bg="#5F9EA0", fg="white", font=("Garamond", 14), width=20).pack(pady=20)
     tk.Button(dashboard_screen, text="Add Transactions", command=add_transaction,
-              bg="#20B2AA", fg="white", font=("Arial", 14), width=20).pack(pady=10)
+              bg="#20B2AA", fg="white", font=("Garamond", 14), width=20).pack(pady=20)
     tk.Button(dashboard_screen, text="Create Room", command=create_room,
-              bg="#5F9EA0", fg="white", font=("Arial", 14), width=20).pack(pady=10)
+              bg="#5F9EA0", fg="white", font=("Garamond", 14), width=20).pack(pady=30)
     tk.Button(dashboard_screen, text="Log Out", command=lambda: [dashboard_screen.destroy(), show_welcome()],
-              bg="#FF4500", fg="white", font=("Arial", 14), width=20).pack(pady=10)
+              bg="#FF4500", fg="white", font=("Garamond", 14), width=20).pack(pady=30)
 
     dashboard_screen.mainloop()
 
@@ -157,23 +187,24 @@ def view_transactions():
     transactions_screen = tk.Tk()
     transactions_screen.title("View Transactions")
     transactions_screen.configure(bg="#F0F8FF")
+    transactions_screen.geometry("1000x1000")
 
     cursor.execute("SELECT * FROM transactions WHERE username=? OR roommate=?", (current_user, current_user))
     transactions = cursor.fetchall()
 
     if transactions:
-        tk.Label(transactions_screen, text="Transactions:", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+        tk.Label(transactions_screen, text="Transactions:", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
         for transaction in transactions:
-            tk.Label(transactions_screen, text=f"{transaction[1]} is owed ${transaction[4]} for {transaction[5]} by {transaction[2]}", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+            tk.Label(transactions_screen, text=f"{transaction[1]} is owed ${transaction[5]} for {transaction[4]} by {transaction[2]}", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
 
         tk.Button(transactions_screen, text="Settle Transaction", command=lambda: settle_transaction(transactions),
-                  bg="#20B2AA", fg="white", font=("Arial", 14)).pack(pady=10)
+                  bg="#20B2AA", fg="white", font=("Garamond", 14)).pack(pady=10)
     else:
         tk.Label(transactions_screen, text="No transactions found.", bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
     tk.Button(transactions_screen, text="Back", command=transactions_screen.destroy,
-              bg="#FF6347", fg="white", font=("Arial", 14)).pack(pady=10)
+              bg="#FF6347", fg="white", font=("Garamond", 14)).pack(pady=10)
     transactions_screen.mainloop()
 
 # Function to settle a transaction
@@ -181,8 +212,9 @@ def settle_transaction(transactions):
     settle_screen = tk.Tk()
     settle_screen.title("Settle Transaction")
     settle_screen.configure(bg="#F0F8FF")
+    settle_screen.geometry("1000x1000")
 
-    tk.Label(settle_screen, text="Select a Transaction to Settle:", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(settle_screen, text="Select a Transaction to Settle:", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
     for transaction in transactions:
         tk.Button(settle_screen, text=f"{transaction[1]} is owed ${transaction[4]} for {transaction[5]} by {transaction[2]}",
@@ -201,8 +233,9 @@ def add_transaction():
     transaction_screen = tk.Tk()
     transaction_screen.title("Add Transaction")
     transaction_screen.configure(bg="#F0F8FF")
+    transaction_screen.geometry("1000x1000")
 
-    tk.Label(transaction_screen, text="Add Transaction", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(transaction_screen, text="Add Transaction", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
     tk.Label(transaction_screen, text="Roommate Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     roommate_entry = tk.Entry(transaction_screen)
@@ -244,8 +277,9 @@ def create_room():
     room_screen = tk.Tk()
     room_screen.title("Create Room")
     room_screen.configure(bg="#F0F8FF")
+    room_screen.geometry("1000x1000")
 
-    tk.Label(room_screen, text="Create Room", font=("Arial", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
+    tk.Label(room_screen, text="Create Room", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
     tk.Label(room_screen, text="Roommate Name", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     roommate_entry = tk.Entry(room_screen)
@@ -259,17 +293,24 @@ def create_room():
         roommate = roommate_entry.get()
         room_name = room_name_entry.get()
 
-        cursor.execute("INSERT INTO rooms (owner, roommate, room_name) VALUES (?, ?, ?)",
-                       (current_user, roommate, room_name))
-        conn.commit()
-        messagebox.showinfo("Success", "Room created successfully!")
-        room_screen.destroy()
+        if not roommate or not room_name:
+            messagebox.showerror("Error", "Roommate and Room Name cannot be empty!")
+            return
 
+        try:
+            cursor.execute("INSERT INTO rooms (owner, roommate, room_name) VALUES (?, ?, ?)",
+                           (current_user, roommate, room_name))
+            conn.commit()
+            messagebox.showinfo("Success", "Room created successfully!")
+            room_screen.destroy()
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Error", "Room already exists with this name and roommate.")
+        
     tk.Button(room_screen, text="Create Room", command=handle_create_room,
               bg="#5F9EA0", fg="white").pack(pady=10)
+
     tk.Button(room_screen, text="Back", command=room_screen.destroy,
               bg="#FF6347", fg="white").pack(pady=10)
-
     room_screen.mainloop()
 
 # Show the welcome screen
@@ -277,3 +318,15 @@ show_welcome()
 
 # Close the database connection
 conn.close()
+
+def on_closing():
+    conn.close()
+    root.quit()
+
+root = tk.Tk()
+root.protocol("WM_DELETE_WINDOW", on_closing)
+
+# Start the welcome screen
+show_welcome()
+
+
