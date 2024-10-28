@@ -42,43 +42,20 @@ current_user = None
 # Function to show welcome screen
 def show_welcome():
     welcome_screen = tk.Tk()
-    welcome_screen.title("RoomShare")
+    welcome_screen.title("Purdue RoomShare")
     welcome_screen.configure(bg="#F0F8FF")
     welcome_screen.geometry("1000x1000")
 
-    tk.Label(welcome_screen, text="Welcome to RoomShare!", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=40)
+    tk.Label(welcome_screen, text="Welcome to RoomShare, Boiler!", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=40)
 
-    tk.Button(welcome_screen, text="Log In", command=lambda: [welcome_screen.destroy(), show_login()],
-              bg="#5F9EA0", fg="white", font=("Garamond", 14), width=20).pack(pady=10)
+    tk.Button(welcome_screen, text="Log In With Your RoomShare Account", command=lambda: [welcome_screen.destroy(), show_login()],
+              bg="#5F9EA0", fg="white", font=("Garamond", 14), width=60).pack(pady=30)
     tk.Button(welcome_screen, text="Sign Up", command=lambda: [welcome_screen.destroy(), show_signup()],
-              bg="#20B2AA", fg="white", font=("Garamond", 14), width=20).pack(pady=10)
+              bg="#20B2AA", fg="white", font=("Garamond", 14), width=60).pack(pady=30)
 
     welcome_screen.mainloop()
     
-import os
-image_path = os.path.join("path", "to", "your", "roomsharelogo.png")
 
-
-root = tk.Tk()
-root.title("Image Loader")
-
-# Specify the path to your PNG file
-image_path = "path/to/your/image.png"  # Adjust the path as needed
-
-try:
-    # Open and load the image
-    image = Image.open(image_path)
-    photo = ImageTk.PhotoImage(image)
-
-    # Create a label to display the image
-    label = tk.Label(root, image=photo)
-    label.pack()
-
-except FileNotFoundError:
-    print(f"Image Loading Error")
-
-# Start the event loop
-root.mainloop()
 
 # Function to show signup screen
 def show_signup():
@@ -196,7 +173,7 @@ def view_transactions():
         tk.Label(transactions_screen, text="Transactions:", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=10)
 
         for transaction in transactions:
-            tk.Label(transactions_screen, text=f"{transaction[1]} is owed ${transaction[5]} for {transaction[4]} by {transaction[2]}", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+            tk.Label(transactions_screen, text=f"{transaction[1]} is owed ${transaction[4]} for {transaction[5]} by {transaction[2]}", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
 
         tk.Button(transactions_screen, text="Settle Transaction", command=lambda: settle_transaction(transactions),
                   bg="#20B2AA", fg="white", font=("Garamond", 14)).pack(pady=10)
@@ -252,6 +229,12 @@ def add_transaction():
     tk.Label(transaction_screen, text="Item", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     item_entry = tk.Entry(transaction_screen)
     item_entry.pack(pady=5)
+    
+    tk.Label(transaction_screen, text="Store", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    store_entry = tk.Entry(transaction_screen)
+    store_entry.pack(pady=5)
+    
+    
 
     def handle_add_transaction():
         roommate = roommate_entry.get()
