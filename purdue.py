@@ -102,7 +102,10 @@ def show_signup():
     signup_screen.mainloop()
 
 # Function to show login screen
-def show_login():
+def show_login(previous_window=None):
+    if previous_window:
+        previous_window.destroy()
+        
     login_screen = tk.Tk()
     login_screen.title("Log In")
     login_screen.configure(bg="#F0F8FF")
@@ -140,7 +143,9 @@ def show_login():
     login_screen.mainloop()
 
 # Function to show user dashboard
-def show_user_dashboard():
+def show_user_dashboard(previous_window=None):
+    if previous_window:
+        previous_window.destroy()
     dashboard_screen = tk.Tk()
     dashboard_screen.title("User Dashboard")
     dashboard_screen.configure(bg="#F0F8FF")
@@ -160,7 +165,9 @@ def show_user_dashboard():
     dashboard_screen.mainloop()
 
 # Function to view transactions
-def view_transactions():
+def view_transactions(previous_window=None):
+    if previous_window:
+        previous_window.destroy()
     transactions_screen = tk.Tk()
     transactions_screen.title("View Transactions")
     transactions_screen.configure(bg="#F0F8FF")
@@ -206,7 +213,9 @@ def handle_settle(transaction):
     conn.commit()
     messagebox.showinfo("Success", "Transaction settled successfully!")
     
-def add_transaction():
+def add_transaction(previous_window=None):
+    if previous_window:
+        previous_window.destroy()
     transaction_screen = tk.Tk()
     transaction_screen.title("Add Transaction")
     transaction_screen.configure(bg="#F0F8FF")
@@ -310,6 +319,6 @@ root = tk.Tk()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
 # Start the welcome screen
-show_welcome()
+#show_welcome()
 
 
