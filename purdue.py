@@ -2,6 +2,7 @@ import sqlite3
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
+from prices import target_prices
 
 # Connect to SQLite database
 conn = sqlite3.connect('roomshare.db')
@@ -212,7 +213,9 @@ def handle_settle(transaction):
     cursor.execute("DELETE FROM transactions WHERE id=?", (transaction[0],))
     conn.commit()
     messagebox.showinfo("Success", "Transaction settled successfully!")
-    
+
+
+
 def add_transaction(previous_window=None):
     if previous_window:
         previous_window.destroy()
@@ -239,23 +242,49 @@ def add_transaction(previous_window=None):
     item_entry = tk.Entry(transaction_screen)
     item_entry.pack(pady=5)
     
-    tk.Label(transaction_screen, text="Store", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None\nPlease write the brand name before any store-specific items.", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     store_entry = tk.Entry(transaction_screen)
     store_entry.pack(pady=5)
     
     
+    def load_target():
+        return target_prices
 
     def handle_add_transaction():
-        roommate = roommate_entry.get()
-        room_name = room_name_entry.get()
+        roommate = roommate_entry.get().lower()
+        room_name = room_name_entry.get().lower()
         amount = amount_entry.get()
-        item = item_entry.get()
+        item = item_entry.get().lower()
+        store = store_entry.get().lower()
 
-        cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
-                       (current_user, roommate, room_name, amount, item))
-        conn.commit()
-        messagebox.showinfo("Success", "Transaction added successfully!")
-        transaction_screen.destroy()
+        target_prices = load_target()
+
+        if store == "target":
+            # Convert amount to float for comparison
+            try:
+                amount_float = float(amount)
+            except ValueError:
+                messagebox.showerror("Error", "Amount must be a valid number.")
+                return
+
+            # Check if the item is in the fake database and verify amount
+            if item in target_prices:
+                if amount_float == target_prices[item]:
+                    cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
+                                (current_user, roommate, room_name, amount, item))
+                    conn.commit()
+                    messagebox.showinfo("Success", "Transaction added successfully!")
+                    transaction_screen.destroy()
+                else:
+                    messagebox.showerror("Error", "Transaction could not be added. Item and amount do not match Target database.")
+            else:
+                messagebox.showerror("Error", "Item not found in Target prices database.")
+        else:
+            cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
+                        (current_user, roommate, room_name, amount, item))
+            conn.commit()
+            messagebox.showinfo("Success", "Transaction added successfully!")
+            transaction_screen.destroy()
 
     tk.Button(transaction_screen, text="Add Transaction", command=handle_add_transaction,
               bg="#5F9EA0", fg="white").pack(pady=10)
