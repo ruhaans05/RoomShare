@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from prices import target_prices
+import webbrowser
 
 # Connect to SQLite database
 conn = sqlite3.connect('roomshare.db')
@@ -241,14 +242,29 @@ def add_transaction(previous_window=None):
     tk.Label(transaction_screen, text="Item", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     item_entry = tk.Entry(transaction_screen)
     item_entry.pack(pady=5)
-    
-    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None\nPlease write the brand name before any store-specific items.", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+
+    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None\nPlease write the brand name before any store-specific items.\nEx: gg eggs or good and gather eggs", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     store_entry = tk.Entry(transaction_screen)
     store_entry.pack(pady=5)
-    
-    
+
     def load_target():
         return target_prices
+
+    def show_custom_error():
+        error_window = tk.Toplevel(transaction_screen)
+        error_window.title("Error")
+        error_window.configure(bg="#F0F8FF")
+        
+        tk.Label(
+            error_window,
+            text="Item not found in Target prices database. Item and amount do not match Target database.\n"
+                 "View our database source code: (if item not in database, do not enter Target)",
+            bg="#F0F8FF", fg="#2F4F4F", wraplength=400, justify="left"
+        ).pack(padx=20, pady=(20, 10))
+        
+        link = tk.Label(error_window, text="View Database Source Code", fg="blue", cursor="hand2", bg="#F0F8FF")
+        link.pack(pady=(0, 20))
+        link.bind("<Button-1>", lambda e: open_database_code())  # Opens the webpage link
 
     def handle_add_transaction():
         roommate = roommate_entry.get().lower()
@@ -260,39 +276,42 @@ def add_transaction(previous_window=None):
         target_prices = load_target()
 
         if store == "target":
-            # Convert amount to float for comparison
             try:
                 amount_float = float(amount)
             except ValueError:
                 messagebox.showerror("Error", "Amount must be a valid number.")
                 return
 
-            # Check if the item is in the fake database and verify amount
             if item in target_prices:
                 if amount_float == target_prices[item]:
-                    cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
-                                (current_user, roommate, room_name, amount, item))
+                    cursor.execute(
+                        "INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
+                        (current_user, roommate, room_name, amount, f"{item} - Target Verified")
+                    )
                     conn.commit()
                     messagebox.showinfo("Success", "Transaction added successfully!")
                     transaction_screen.destroy()
                 else:
-                    messagebox.showerror("Error", "Transaction could not be added. Item and amount do not match Target database.")
+                    show_custom_error()
             else:
-                messagebox.showerror("Error", "Item not found in Target prices database.")
+                show_custom_error()
         else:
-            cursor.execute("INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
-                        (current_user, roommate, room_name, amount, item))
+            cursor.execute(
+                "INSERT INTO transactions (username, roommate, room_name, amount, item) VALUES (?, ?, ?, ?, ?)",
+                (current_user, roommate, room_name, amount, item)
+            )
             conn.commit()
             messagebox.showinfo("Success", "Transaction added successfully!")
             transaction_screen.destroy()
 
-    tk.Button(transaction_screen, text="Add Transaction", command=handle_add_transaction,
-              bg="#5F9EA0", fg="white").pack(pady=10)
-
-    tk.Button(transaction_screen, text="Back", command=transaction_screen.destroy,
-              bg="#FF6347", fg="white").pack(pady=10)
+    tk.Button(transaction_screen, text="Add Transaction", command=handle_add_transaction, bg="#5F9EA0", fg="white").pack(pady=10)
+    tk.Button(transaction_screen, text="Back", command=transaction_screen.destroy, bg="#FF6347", fg="white").pack(pady=10)
     transaction_screen.mainloop()
 
+def open_database_code():
+    webbrowser.open("https://docs.google.com/document/d/18YusSg3pYqP0jZy54fmPZm6V4kmtiNPzaLB2zAfOvlQ/edit?usp=sharing")  # Replace with your webpage URL
+
+    
 # Function to create a room
 def create_room():
     room_screen = tk.Tk()
