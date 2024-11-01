@@ -1,4 +1,4 @@
-#Will update infrequently
+#Will update infrequently due to more efficient API usage
 
 target_prices = {
             "earpods": 19.99,
