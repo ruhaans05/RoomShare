@@ -1,6 +1,6 @@
 import sqlite3
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, Listbox
 from PIL import Image, ImageTk
 from prices import target_prices
 import webbrowser
@@ -243,12 +243,34 @@ def add_transaction(previous_window=None):
     item_entry = tk.Entry(transaction_screen)
     item_entry.pack(pady=5)
 
-    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None\nPlease write the brand name before any store-specific items.\nEx: gg eggs or good and gather eggs", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     store_entry = tk.Entry(transaction_screen)
     store_entry.pack(pady=5)
 
     def load_target():
         return target_prices
+    
+    suggestions_listbox = Listbox(transaction_screen, bg="#FFFFFF", fg="#2F4F4F", width = 75)
+    suggestions_listbox.pack(pady=5)
+    
+    def update_suggestions(event):
+        typed_text = item_entry.get().lower()
+        suggestions_listbox.delete(0, tk.END)  # Clear the listbox
+
+        # Filter and add suggestions
+        for item in target_prices.keys():
+            if typed_text in item.lower():
+                suggestions_listbox.insert(tk.END, item)
+
+    def select_suggestion(event):
+        selected_item = suggestions_listbox.get(suggestions_listbox.curselection())
+        item_entry.delete(0, tk.END)
+        item_entry.insert(0, selected_item)
+        suggestions_listbox.delete(0, tk.END)  # Clear suggestions after selection
+
+    # Bind the key release event to update suggestions
+    item_entry.bind("<KeyRelease>", update_suggestions)
+    suggestions_listbox.bind("<ButtonRelease-1>", select_suggestion)
 
     def show_custom_error():
         error_window = tk.Toplevel(transaction_screen)
