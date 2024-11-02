@@ -238,14 +238,15 @@ def add_transaction(previous_window=None):
     tk.Label(transaction_screen, text="Amount", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     amount_entry = tk.Entry(transaction_screen)
     amount_entry.pack(pady=5)
+    
+    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
+    store_entry = tk.Entry(transaction_screen)
+    store_entry.pack(pady=5)
 
     tk.Label(transaction_screen, text="Item", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
     item_entry = tk.Entry(transaction_screen)
     item_entry.pack(pady=5)
 
-    tk.Label(transaction_screen, text="Store: State Street Target, Walmart(Soon), Sam's Club (Soon), or None", bg="#F0F8FF", fg="#2F4F4F").pack(pady=5)
-    store_entry = tk.Entry(transaction_screen)
-    store_entry.pack(pady=5)
 
     def load_target():
         return target_prices
