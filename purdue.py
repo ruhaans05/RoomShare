@@ -50,7 +50,7 @@ def show_welcome():
 
     tk.Label(welcome_screen, text="Welcome to RoomShare, Boiler!", font=("Garamond", 20, "bold"), bg="#F0F8FF", fg="#2F4F4F").pack(pady=40)
 
-    tk.Button(welcome_screen, text="Log In With Your RoomShare Account", command=lambda: [welcome_screen.destroy(), show_login()],
+    tk.Button(welcome_screen, text="Log In", command=lambda: [welcome_screen.destroy(), show_login()],
               bg="#5F9EA0", fg="white", font=("Garamond", 14), width=60).pack(pady=30)
     tk.Button(welcome_screen, text="Sign Up", command=lambda: [welcome_screen.destroy(), show_signup()],
               bg="#20B2AA", fg="white", font=("Garamond", 14), width=60).pack(pady=30)
